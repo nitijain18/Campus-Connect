@@ -1,0 +1,126 @@
+<div class="sticky top-0 z-50">
+  <!-- Primary Navbar -->
+  <nav class="bg-dark-950/95 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4">
+      <div class="flex justify-between items-center h-16">
+
+        <a routerLink="/" class="text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span class="h-8 w-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-sm">🎓</span>
+          CampusConnect
+        </a>
+
+        <div class="hidden md:flex items-center gap-1">
+          <a routerLink="/" routerLinkActive="text-white bg-white/10" [routerLinkActiveOptions]="{exact: true}"
+             class="text-slate-300 hover:text-white hover:bg-white/5 font-medium px-3 py-2 rounded-lg text-sm transition">Home</a>
+          <a routerLink="/events" routerLinkActive="text-white bg-white/10"
+             class="text-slate-300 hover:text-white hover:bg-white/5 font-medium px-3 py-2 rounded-lg text-sm transition">Events</a>
+          <a routerLink="/colleges" routerLinkActive="text-white bg-white/10"
+             class="text-slate-300 hover:text-white hover:bg-white/5 font-medium px-3 py-2 rounded-lg text-sm transition">Colleges</a>
+          <a routerLink="/" fragment="about"
+             class="text-slate-300 hover:text-white hover:bg-white/5 font-medium px-3 py-2 rounded-lg text-sm transition">About</a>
+        </div>
+
+        <div class="hidden md:flex items-center gap-3">
+          @if (authService.isLoggedIn()) {
+            <a routerLink="/notifications" class="relative text-slate-300 hover:text-white p-2 rounded-lg hover:bg-white/5 transition">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              @if (notificationService.unreadCount() > 0) {
+                <span class="absolute top-0 right-0 bg-primary-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-scale-in">
+                  {{ notificationService.unreadCount() }}
+                </span>
+              }
+            </a>
+
+            <a routerLink="/profile" class="flex items-center gap-2 pl-2 border-l border-white/10">
+              @if (authService.currentUser()?.profileImage) {
+                <img [src]="authService.currentUser()?.profileImage" class="h-8 w-8 rounded-full object-cover ring-2 ring-primary-500/40" />
+              } @else {
+                <div class="h-8 w-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-white flex items-center justify-center text-sm font-bold">
+                  {{ authService.currentUser()?.firstName?.charAt(0) }}
+                </div>
+              }
+            </a>
+            <button (click)="logout()" class="text-sm text-slate-400 hover:text-red-400 font-medium">Logout</button>
+          } @else {
+            <a routerLink="/login" class="text-slate-300 hover:text-white font-medium text-sm px-3 py-2">Login</a>
+            <a routerLink="/signup"
+               class="bg-primary-600 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-primary-500 hover:shadow-lg hover:shadow-primary-600/30 transition">
+              Sign Up
+            </a>
+          }
+        </div>
+
+        <button (click)="toggleMenu()" class="md:hidden text-slate-300 hover:text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      @if (menuOpen) {
+        <div class="md:hidden pb-4 flex flex-col gap-1 animate-fade-in-up">
+          <a routerLink="/" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Home</a>
+          <a routerLink="/events" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Events</a>
+          <a routerLink="/colleges" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Colleges</a>
+          <a routerLink="/" fragment="about" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">About</a>
+
+          @if (authService.isLoggedIn()) {
+            <div class="border-t border-white/10 my-2"></div>
+            <a routerLink="/wishlist" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Wishlist</a>
+            <a routerLink="/tickets" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">My Bookings</a>
+            <a routerLink="/orders" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Orders</a>
+            <a routerLink="/notifications" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">
+              Notifications @if (notificationService.unreadCount() > 0) { ({{ notificationService.unreadCount() }}) }
+            </a>
+            @if (authService.isVendor()) {
+              <a routerLink="/vendor/dashboard" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Vendor Dashboard</a>
+            } @else {
+              <a routerLink="/vendor/apply" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Become a Vendor</a>
+            }
+            @if (authService.isAdmin()) {
+              <a routerLink="/admin" (click)="toggleMenu()" class="text-red-400 font-semibold px-3 py-2 rounded-lg hover:bg-white/5">Admin</a>
+            }
+            <a routerLink="/profile" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Profile</a>
+            <button (click)="logout()" class="text-left text-red-400 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Logout</button>
+          } @else {
+            <div class="border-t border-white/10 my-2"></div>
+            <a routerLink="/login" (click)="toggleMenu()" class="text-slate-200 font-medium px-3 py-2 rounded-lg hover:bg-white/5">Login</a>
+            <a routerLink="/signup" (click)="toggleMenu()" class="text-primary-400 font-semibold px-3 py-2 rounded-lg hover:bg-white/5">Sign Up</a>
+          }
+        </div>
+      }
+    </div>
+  </nav>
+
+  <!-- Sub-navbar -->
+  @if (authService.isLoggedIn()) {
+    <div class="hidden md:block bg-dark-900 border-b border-white/5">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center gap-1 h-10 text-sm">
+          <a routerLink="/wishlist" routerLinkActive="text-primary-400 font-semibold"
+             class="text-slate-400 hover:text-primary-400 px-3 py-1 transition">Wishlist</a>
+          <a routerLink="/tickets" routerLinkActive="text-primary-400 font-semibold"
+             class="text-slate-400 hover:text-primary-400 px-3 py-1 transition">My Bookings</a>
+          <a routerLink="/orders" routerLinkActive="text-primary-400 font-semibold"
+             class="text-slate-400 hover:text-primary-400 px-3 py-1 transition">Orders</a>
+
+          @if (authService.isVendor()) {
+            <a routerLink="/vendor/dashboard" routerLinkActive="text-primary-400 font-semibold"
+               class="text-slate-400 hover:text-primary-400 px-3 py-1 transition">Vendor Dashboard</a>
+          } @else {
+            <a routerLink="/vendor/apply" routerLinkActive="text-primary-400 font-semibold"
+               class="text-slate-400 hover:text-primary-400 px-3 py-1 transition">Become a Vendor</a>
+          }
+
+          @if (authService.isAdmin()) {
+            <a routerLink="/admin" routerLinkActive="text-red-400 font-semibold"
+               class="text-red-500/80 hover:text-red-400 px-3 py-1 font-medium transition">Admin Panel</a>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

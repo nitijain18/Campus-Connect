@@ -1,0 +1,79 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 py-10">
+
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-8 animate-fade-in-up">Browse Events</h1>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-10 flex flex-wrap gap-3 items-end animate-fade-in-up delay-1">
+      <div class="flex-1 min-w-[180px]">
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Search</label>
+        <input [(ngModel)]="filters.keyword" (ngModelChange)="onFilterChange()" type="text"
+               placeholder="Search events..."
+               class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" />
+      </div>
+
+      <div class="min-w-[160px]">
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Category</label>
+        <select [(ngModel)]="filters.category" (ngModelChange)="onFilterChange()"
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition bg-white">
+          <option [ngValue]="null">All Categories</option>
+          @for (cat of categories(); track cat.id) {
+            <option [ngValue]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="min-w-[160px]">
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5">College</label>
+        <select [(ngModel)]="filters.college" (ngModelChange)="onFilterChange()"
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition bg-white">
+          <option [ngValue]="null">All Colleges</option>
+          @for (college of colleges(); track college.id) {
+            <option [ngValue]="college.id">{{ college.name }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="min-w-[120px]">
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Date</label>
+        <input [(ngModel)]="filters.date" (ngModelChange)="onFilterChange()" type="date"
+               class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" />
+      </div>
+
+      <div class="min-w-[100px]">
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Min Price</label>
+        <input [(ngModel)]="filters.minPrice" (ngModelChange)="onFilterChange()" type="number" min="0"
+               class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" />
+      </div>
+
+      <div class="min-w-[100px]">
+        <label class="block text-xs font-semibold text-slate-500 mb-1.5">Max Price</label>
+        <input [(ngModel)]="filters.maxPrice" (ngModelChange)="onFilterChange()" type="number" min="0"
+               class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 transition" />
+      </div>
+
+      <button (click)="clearFilters()"
+              class="px-4 py-2.5 text-sm text-slate-500 hover:text-slate-700 font-semibold hover:bg-slate-50 rounded-xl transition">
+        Clear
+      </button>
+    </div>
+
+    <!-- Results -->
+    @if (loading()) {
+      <p class="text-slate-400">Loading events...</p>
+    } @else if (events().length === 0) {
+      <div class="text-center py-20 animate-fade-in">
+        <p class="text-5xl mb-4">🔍</p>
+        <p class="text-slate-400">No events match your filters.</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (event of events(); track event.id; let i = $index) {
+          <div class="animate-fade-in-up" [style.animation-delay]="(i % 6) * 0.05 + 's'">
+            <app-event-card [event]="event" />
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

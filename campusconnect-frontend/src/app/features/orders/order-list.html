@@ -1,0 +1,56 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="max-w-3xl mx-auto px-4 py-10">
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-8 animate-fade-in-up">My Orders</h1>
+
+    @if (cancelError()) {
+      <p class="text-red-500 text-sm mb-5 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{{ cancelError() }}</p>
+    }
+
+    @if (loading()) {
+      <p class="text-slate-400">Loading...</p>
+    } @else if (orders().length === 0) {
+      <div class="text-center py-24 animate-fade-in">
+        <p class="text-5xl mb-4">🧾</p>
+        <p class="text-slate-500 mb-5">You haven't placed any orders yet.</p>
+        <a routerLink="/events" class="inline-block bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-primary-500 transition">Browse events</a>
+      </div>
+    } @else {
+      <div class="space-y-3">
+        @for (order of orders(); track order.id; let i = $index) {
+          <a [routerLink]="['/orders', order.id]"
+             class="animate-fade-in-up bg-white rounded-2xl border border-slate-200 p-5 block hover:shadow-lg hover:shadow-slate-900/5 hover:border-primary-200 transition-all"
+             [style.animation-delay]="(i % 8) * 0.05 + 's'">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <h3 class="font-bold text-slate-900">{{ order.event.title }}</h3>
+                <p class="text-sm text-slate-500 mt-0.5">{{ order.event.eventDate }} • Order #{{ order.id }}</p>
+              </div>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full"
+                    [class.bg-primary-100]="order.status === 'CONFIRMED'"
+                    [class.text-primary-700]="order.status === 'CONFIRMED'"
+                    [class.bg-amber-100]="order.status === 'PENDING'"
+                    [class.text-amber-700]="order.status === 'PENDING'"
+                    [class.bg-red-100]="order.status === 'CANCELLED' || order.status === 'REFUNDED'"
+                    [class.text-red-700]="order.status === 'CANCELLED' || order.status === 'REFUNDED'">
+                {{ order.status }}
+              </span>
+            </div>
+
+            <div class="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
+              <p class="text-sm text-slate-600">
+                Total: <span class="font-bold text-slate-900">{{ order.totalAmount > 0 ? ('₹' + order.totalAmount) : 'Free' }}</span>
+              </p>
+
+              @if (canCancel(order)) {
+                <button (click)="cancelOrder(order.id, $event)" [disabled]="cancellingId() === order.id"
+                        class="text-red-600 text-sm font-semibold hover:text-red-700 disabled:opacity-50">
+                  {{ cancellingId() === order.id ? 'Cancelling...' : 'Cancel Order' }}
+                </button>
+              }
+            </div>
+          </a>
+        }
+      </div>
+    }
+  </div>
+</div>

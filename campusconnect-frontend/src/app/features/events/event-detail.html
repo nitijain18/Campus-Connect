@@ -1,0 +1,149 @@
+<div class="min-h-screen bg-slate-50">
+  @if (loading()) {
+    <div class="max-w-5xl mx-auto px-4 py-24 text-center text-slate-400">Loading event...</div>
+  } @else if (notFound()) {
+    <div class="max-w-5xl mx-auto px-4 py-24 text-center text-slate-400">Event not found.</div>
+  } @else if (event(); as event) {
+    <div class="max-w-5xl mx-auto px-4 py-10 animate-fade-in">
+
+      @if (media().length > 0) {
+        <div class="mb-8 animate-fade-in-up">
+          <div class="h-64 md:h-[28rem] bg-slate-100 rounded-3xl overflow-hidden mb-3 shadow-sm">
+            <img [src]="media()[activeImageIndex()].imageUrl" class="w-full h-full object-cover" />
+          </div>
+          @if (media().length > 1) {
+            <div class="flex gap-2 overflow-x-auto pb-1">
+              @for (item of media(); track item.id; let i = $index) {
+                <button (click)="selectImage(i)"
+                        class="flex-shrink-0 h-16 w-16 rounded-xl overflow-hidden border-2 transition"
+                        [class.border-primary-500]="activeImageIndex() === i"
+                        [class.border-transparent]="activeImageIndex() !== i">
+                  <img [src]="item.imageUrl" class="w-full h-full object-cover" />
+                </button>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="h-64 md:h-96 bg-slate-100 rounded-3xl mb-8 flex items-center justify-center text-slate-300 animate-fade-in-up">
+          No images available
+        </div>
+      }
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="md:col-span-2 animate-fade-in-up delay-1">
+          <div class="flex justify-between items-start mb-2">
+            <p class="text-xs text-primary-600 font-bold uppercase tracking-wide">{{ event.category?.name || 'General' }}</p>
+            <button (click)="openReportDialog()" class="text-xs text-slate-400 hover:text-red-500 font-medium transition">⚑ Report</button>
+          </div>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">{{ event.title }}</h1>
+
+          <div class="flex flex-wrap gap-3 mb-8">
+            <span class="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-sm text-slate-600 font-medium">📅 {{ event.eventDate }} @if (event.eventTime) { at {{ event.eventTime }} }</span>
+            <span class="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-sm text-slate-600 font-medium">🏫 {{ event.college.name }}</span>
+            @if (event.venueName) {
+              <span class="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-sm text-slate-600 font-medium">📍 {{ event.venueName }}</span>
+            }
+            @if (event.isOnline) {
+              <span class="bg-white border border-slate-200 rounded-full px-3 py-1.5 text-sm text-slate-600 font-medium">💻 Online Event</span>
+            }
+          </div>
+
+          <div class="mb-8">
+            <h2 class="text-lg font-bold text-slate-900 mb-3">About this event</h2>
+            <p class="text-slate-600 whitespace-pre-line leading-relaxed">{{ event.description || 'No description provided.' }}</p>
+          </div>
+
+          <div class="mb-6 bg-white rounded-2xl border border-slate-200 p-6">
+            <h2 class="text-lg font-bold text-slate-900 mb-4">Reviews</h2>
+
+            @if (event.averageRating > 0) {
+              <p class="text-slate-600 mb-5 font-medium">⭐ {{ event.averageRating.toFixed(1) }} <span class="text-slate-400 font-normal">({{ event.totalReviews }} reviews)</span></p>
+            }
+
+            @if (reviews().length === 0) {
+              <p class="text-slate-400 text-sm mb-5">No reviews yet.</p>
+            } @else {
+              <div class="space-y-3 mb-5">
+                @for (review of reviews(); track review.id) {
+                  <div class="bg-slate-50 rounded-xl p-4">
+                    <p class="text-sm">{{ '⭐'.repeat(review.rating) }}</p>
+                    @if (review.reviewText) { <p class="text-sm text-slate-600 mt-1.5">{{ review.reviewText }}</p> }
+                  </div>
+                }
+              </div>
+            }
+
+            @if (myConfirmedOrder() && !reviewSubmitted()) {
+              <div class="border-t border-slate-100 pt-5">
+                <p class="text-sm font-semibold text-slate-700 mb-3">Leave a review</p>
+                <select [(ngModel)]="reviewRating" [ngModelOptions]="{standalone: true}"
+                        class="px-3.5 py-2 border border-slate-200 rounded-xl text-sm mb-3 bg-white">
+                  <option [ngValue]="5">⭐⭐⭐⭐⭐</option>
+                  <option [ngValue]="4">⭐⭐⭐⭐</option>
+                  <option [ngValue]="3">⭐⭐⭐</option>
+                  <option [ngValue]="2">⭐⭐</option>
+                  <option [ngValue]="1">⭐</option>
+                </select>
+                <textarea [(ngModel)]="reviewText" [ngModelOptions]="{standalone: true}" rows="2" placeholder="Share your experience..."
+                          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+                <button (click)="submitReview()" [disabled]="submittingReview()"
+                        class="bg-primary-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-500 transition disabled:opacity-50">
+                  {{ submittingReview() ? 'Submitting...' : 'Submit Review' }}
+                </button>
+              </div>
+            } @else if (reviewSubmitted()) {
+              <p class="text-primary-700 text-sm font-medium">✓ Thanks for your review!</p>
+            }
+          </div>
+        </div>
+
+        <div class="md:col-span-1 animate-fade-in-up delay-2">
+          <div class="bg-white rounded-3xl shadow-lg shadow-slate-900/5 border border-slate-100 p-6 sticky top-24">
+
+            @if (bookingSuccess()) {
+              <div class="text-center py-6 animate-scale-in">
+                <p class="text-5xl mb-4">🎉</p>
+                <h3 class="font-bold text-slate-900 mb-1">Booking Confirmed!</h3>
+                <p class="text-sm text-slate-500 mb-5">Your ticket is ready.</p>
+                <a routerLink="/tickets" class="inline-block bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-primary-500 transition">View My Tickets</a>
+              </div>
+            } @else {
+              <button (click)="toggleWishlist()" [disabled]="wishlistLoading()"
+                      class="w-full mb-3 border py-2.5 rounded-xl font-semibold text-sm transition disabled:opacity-50"
+                      [class.border-red-300]="inWishlist()" [class.text-red-500]="inWishlist()" [class.bg-red-50]="inWishlist()"
+                      [class.border-slate-200]="!inWishlist()" [class.text-slate-600]="!inWishlist()">
+                {{ inWishlist() ? '♥ In Wishlist' : '♡ Add to Wishlist' }}
+              </button>
+
+              <p class="text-3xl font-extrabold text-slate-900 mb-1">{{ event.price > 0 ? ('₹' + event.price) : 'Free' }}</p>
+              <p class="text-sm text-slate-500 mb-5">{{ event.availableSeats }} of {{ event.totalSeats }} seats left</p>
+
+              @if (event.status !== 'UPCOMING') {
+                <p class="text-red-500 text-sm font-medium mb-3 bg-red-50 rounded-lg px-3 py-2">This event is {{ event.status.toLowerCase() }}.</p>
+              } @else if (event.availableSeats === 0) {
+                <p class="text-red-500 text-sm font-medium mb-3 bg-red-50 rounded-lg px-3 py-2">Sold out.</p>
+              }
+
+              @if (bookingError()) {
+                <p class="text-red-500 text-sm mb-3 bg-red-50 rounded-lg px-3 py-2">{{ bookingError() }}</p>
+              }
+
+              <button (click)="bookNow()"
+                      [disabled]="event.status !== 'UPCOMING' || event.availableSeats === 0 || booking()"
+                      class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-500 hover:shadow-lg hover:shadow-primary-600/25 transition-all disabled:opacity-50 disabled:hover:shadow-none disabled:cursor-not-allowed">
+                {{ booking() ? 'Processing...' : 'Book Now' }}
+              </button>
+
+              <p class="text-xs text-slate-400 mt-4 text-center">Hosted by <span class="font-medium text-slate-600">{{ event.vendor.businessName }}</span></p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    @if (showReportDialog()) {
+      <app-report-dialog [eventId]="event.id" [vendorId]="event.vendor.id" (closed)="closeReportDialog()" />
+    }
+  }
+</div>

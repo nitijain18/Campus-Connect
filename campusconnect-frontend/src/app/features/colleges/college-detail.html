@@ -1,0 +1,33 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 py-10">
+    @if (loading()) {
+      <p class="text-slate-400">Loading...</p>
+    } @else if (college(); as college) {
+      <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-7 mb-10 animate-fade-in-up">
+        <div class="h-12 w-12 rounded-xl bg-primary-50 flex items-center justify-center text-xl mb-4">🏫</div>
+        <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ college.name }}</h1>
+        <p class="text-slate-500 mt-1">{{ college.city }}, {{ college.state }}</p>
+        @if (college.address) { <p class="text-sm text-slate-500 mt-2">{{ college.address }}</p> }
+        @if (college.website) {
+          <a [href]="college.website" target="_blank" class="text-primary-600 text-sm font-semibold hover:text-primary-700 mt-3 inline-block">Visit website →</a>
+        }
+      </div>
+
+      <h2 class="text-xl font-extrabold text-slate-900 tracking-tight mb-6 animate-fade-in-up delay-1">Events at {{ college.name }}</h2>
+
+      @if (events().length === 0) {
+        <p class="text-slate-400">No events at this college yet.</p>
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          @for (event of events(); track event.id; let i = $index) {
+            <div class="animate-fade-in-up" [style.animation-delay]="(i % 6) * 0.05 + 's'">
+              <app-event-card [event]="event" />
+            </div>
+          }
+        </div>
+      }
+    } @else {
+      <p class="text-slate-400">College not found.</p>
+    }
+  </div>
+</div>

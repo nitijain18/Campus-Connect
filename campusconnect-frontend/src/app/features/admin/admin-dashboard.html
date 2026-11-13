@@ -1,0 +1,219 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 py-10">
+
+    <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight mb-8 animate-fade-in-up">Admin Dashboard</h1>
+
+    <div class="flex gap-1 mb-8 border-b border-slate-200 flex-wrap animate-fade-in-up delay-1">
+      <button (click)="setTab('overview')" [class.text-primary-600]="activeTab() === 'overview'" [class.border-primary-600]="activeTab() === 'overview'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">Overview</button>
+      <button (click)="setTab('vendors')" [class.text-primary-600]="activeTab() === 'vendors'" [class.border-primary-600]="activeTab() === 'vendors'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">
+        Vendors @if (pendingVendors().length > 0) { <span class="ml-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5">{{ pendingVendors().length }}</span> }
+      </button>
+      <button (click)="setTab('categories')" [class.text-primary-600]="activeTab() === 'categories'" [class.border-primary-600]="activeTab() === 'categories'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">Categories</button>
+      <button (click)="setTab('colleges')" [class.text-primary-600]="activeTab() === 'colleges'" [class.border-primary-600]="activeTab() === 'colleges'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">Colleges</button>
+      <button (click)="setTab('events')" [class.text-primary-600]="activeTab() === 'events'" [class.border-primary-600]="activeTab() === 'events'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">Events</button>
+      <button (click)="setTab('students')" [class.text-primary-600]="activeTab() === 'students'" [class.border-primary-600]="activeTab() === 'students'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">Students</button>
+      <button (click)="setTab('payments')" [class.text-primary-600]="activeTab() === 'payments'" [class.border-primary-600]="activeTab() === 'payments'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">Payments</button>
+      <button (click)="setTab('reports')" [class.text-primary-600]="activeTab() === 'reports'" [class.border-primary-600]="activeTab() === 'reports'"
+              class="px-4 py-2.5 border-b-2 border-transparent font-semibold text-slate-500 text-sm hover:text-slate-700 transition">
+        Reports @if (openReports().length > 0) { <span class="ml-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5">{{ openReports().length }}</span> }
+      </button>
+    </div>
+
+    <!-- OVERVIEW -->
+    @if (activeTab() === 'overview') {
+      @if (overview(); as ov) {
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 animate-fade-in-up">
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/5 transition-shadow"><p class="text-sm text-slate-500 font-medium">Total Users</p><p class="text-3xl font-extrabold text-slate-900 mt-1">{{ ov.totalUsers }}</p></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/5 transition-shadow"><p class="text-sm text-slate-500 font-medium">Total Vendors</p><p class="text-3xl font-extrabold text-slate-900 mt-1">{{ ov.totalVendors }}</p></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/5 transition-shadow"><p class="text-sm text-slate-500 font-medium">Pending Approvals</p><p class="text-3xl font-extrabold text-amber-600 mt-1">{{ ov.pendingVendorApprovals }}</p></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/5 transition-shadow"><p class="text-sm text-slate-500 font-medium">Total Events</p><p class="text-3xl font-extrabold text-slate-900 mt-1">{{ ov.totalEvents }}</p></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/5 transition-shadow"><p class="text-sm text-slate-500 font-medium">Total Orders</p><p class="text-3xl font-extrabold text-primary-600 mt-1">{{ ov.totalOrders }}</p></div>
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-lg hover:shadow-slate-900/5 transition-shadow"><p class="text-sm text-slate-500 font-medium">Open Reports</p><p class="text-3xl font-extrabold text-red-500 mt-1">{{ ov.openReports }}</p></div>
+        </div>
+      } @else {
+        <p class="text-slate-400">Loading stats...</p>
+      }
+    }
+
+    <!-- VENDORS -->
+    @if (activeTab() === 'vendors') {
+      <h2 class="text-lg font-bold text-slate-900 mb-4">Pending Vendor Applications</h2>
+      @if (vendorsLoading()) {
+        <p class="text-slate-400">Loading...</p>
+      } @else if (pendingVendors().length === 0) {
+        <p class="text-slate-400">No pending applications.</p>
+      } @else {
+        <div class="space-y-4 animate-fade-in-up">
+          @for (vendor of pendingVendors(); track vendor.id) {
+            <div class="bg-white rounded-2xl border border-slate-200 p-5">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h3 class="font-bold text-slate-900">{{ vendor.businessName }}</h3>
+                  <p class="text-sm text-slate-500 mt-1">{{ vendor.user.firstName }} {{ vendor.user.lastName }} • {{ vendor.user.email }}</p>
+                  <p class="text-sm text-slate-500">{{ vendor.city }}</p>
+                  @if (vendor.description) { <p class="text-sm text-slate-600 mt-2">{{ vendor.description }}</p> }
+                </div>
+                <div class="flex gap-2">
+                  <button (click)="approve(vendor.id)" class="px-4 py-2 bg-primary-600 text-white text-sm font-semibold rounded-xl hover:bg-primary-500 transition">Approve</button>
+                  <button (click)="startReject(vendor.id)" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-semibold rounded-xl hover:bg-red-100 transition">Reject</button>
+                </div>
+              </div>
+              @if (rejectingId() === vendor.id) {
+                <div class="mt-4 pt-4 border-t border-slate-100 animate-fade-in">
+                  <textarea [(ngModel)]="rejectReason" rows="2" placeholder="Reason for rejection..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                  <div class="flex gap-2">
+                    <button (click)="confirmReject(vendor.id)" class="px-4 py-1.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition">Confirm Reject</button>
+                    <button (click)="cancelReject()" class="px-4 py-1.5 text-slate-500 text-sm font-medium hover:text-slate-700">Cancel</button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+
+    <!-- CATEGORIES -->
+    @if (activeTab() === 'categories') {
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-8 animate-fade-in-up">
+        <h2 class="text-lg font-bold text-slate-900 mb-4">Add Category</h2>
+        <input [(ngModel)]="newCategory.name" placeholder="Category name" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        <input [(ngModel)]="newCategory.description" placeholder="Description (optional)" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        <button (click)="submitCategory()" [disabled]="categorySubmitting()" class="bg-primary-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-500 transition disabled:opacity-50">
+          {{ categorySubmitting() ? 'Adding...' : 'Add Category' }}
+        </button>
+      </div>
+      <h2 class="text-lg font-bold text-slate-900 mb-4">All Categories</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        @for (category of categories(); track category.id) {
+          <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <p class="font-semibold text-slate-900">{{ category.name }}</p>
+            @if (category.description) { <p class="text-sm text-slate-500 mt-0.5">{{ category.description }}</p> }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- COLLEGES -->
+    @if (activeTab() === 'colleges') {
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-8 animate-fade-in-up">
+        <h2 class="text-lg font-bold text-slate-900 mb-4">Add College</h2>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <input [(ngModel)]="newCollege.name" placeholder="College name" class="px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          <input [(ngModel)]="newCollege.city" placeholder="City" class="px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <input [(ngModel)]="newCollege.state" placeholder="State" class="px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+          <input [(ngModel)]="newCollege.website" placeholder="Website (optional)" class="px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        </div>
+        <input [(ngModel)]="newCollege.address" placeholder="Address" class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-primary-500" />
+        <button (click)="submitCollege()" [disabled]="collegeSubmitting()" class="bg-primary-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-500 transition disabled:opacity-50">
+          {{ collegeSubmitting() ? 'Adding...' : 'Add College' }}
+        </button>
+      </div>
+      <h2 class="text-lg font-bold text-slate-900 mb-4">All Colleges</h2>
+      <div class="space-y-2">
+        @for (college of colleges(); track college.id) {
+          <div class="bg-white rounded-xl border border-slate-200 p-4 flex justify-between items-center">
+            <div>
+              <p class="font-semibold text-slate-900">{{ college.name }}</p>
+              <p class="text-sm text-slate-500">{{ college.city }}, {{ college.state }}</p>
+            </div>
+            <button (click)="deleteCollege(college.id)" class="text-red-500 text-sm font-semibold hover:text-red-600">Delete</button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- EVENTS -->
+    @if (activeTab() === 'events') {
+      <h2 class="text-lg font-bold text-slate-900 mb-4">All Events</h2>
+      <div class="space-y-3 animate-fade-in-up">
+        @for (event of events(); track event.id) {
+          <div class="bg-white rounded-xl border border-slate-200 p-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-semibold text-slate-900">{{ event.title }}</p>
+                <p class="text-sm text-slate-500">{{ event.eventDate }} • {{ event.status }} • {{ event.vendor.businessName }}</p>
+              </div>
+              @if (event.status !== 'CANCELLED') {
+                <button (click)="startRemoveEvent(event.id)" class="text-red-500 text-sm font-semibold hover:text-red-600">Remove</button>
+              }
+            </div>
+            @if (removingEventId() === event.id) {
+              <div class="mt-3 pt-3 border-t border-slate-100 animate-fade-in">
+                <textarea [(ngModel)]="removeReason" rows="2" placeholder="Reason for removal..." class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+                <div class="flex gap-2">
+                  <button (click)="confirmRemoveEvent(event.id)" class="px-3 py-1.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700">Confirm Remove</button>
+                  <button (click)="cancelRemoveEvent()" class="px-3 py-1.5 text-slate-500 text-sm font-medium">Cancel</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- STUDENTS -->
+    @if (activeTab() === 'students') {
+      <h2 class="text-lg font-bold text-slate-900 mb-4">All Users</h2>
+      <div class="space-y-2 animate-fade-in-up">
+        @for (student of students(); track student.id) {
+          <div class="bg-white rounded-xl border border-slate-200 p-4 flex justify-between items-center">
+            <div>
+              <p class="font-semibold text-slate-900">{{ student.firstName }} {{ student.lastName }}</p>
+              <p class="text-sm text-slate-500">{{ student.email }} • {{ student.role }} @if (student.isAdmin) { • <span class="text-primary-600 font-semibold">Admin</span> }</p>
+            </div>
+            <button (click)="deleteStudent(student.id)" class="text-red-500 text-sm font-semibold hover:text-red-600">Delete</button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- PAYMENTS -->
+    @if (activeTab() === 'payments') {
+      <h2 class="text-lg font-bold text-slate-900 mb-4">All Transactions</h2>
+      <div class="space-y-2 animate-fade-in-up">
+        @for (payment of payments(); track payment.id) {
+          <div class="bg-white rounded-xl border border-slate-200 p-4 flex justify-between items-center">
+            <div>
+              <p class="font-bold text-slate-900">₹{{ payment.amount }}</p>
+              <p class="text-sm text-slate-500">{{ payment.paymentMethod }} • {{ payment.status }}</p>
+            </div>
+            <p class="text-xs text-slate-400">{{ payment.paidAt }}</p>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- REPORTS -->
+    @if (activeTab() === 'reports') {
+      <h2 class="text-lg font-bold text-slate-900 mb-4">Open Reports</h2>
+      @if (openReports().length === 0) {
+        <p class="text-slate-400">No open reports.</p>
+      } @else {
+        <div class="space-y-3 animate-fade-in-up">
+          @for (report of openReports(); track report.id) {
+            <div class="bg-white rounded-xl border border-slate-200 p-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-semibold text-slate-900">{{ report.reason }}</p>
+                  @if (report.description) { <p class="text-sm text-slate-600 mt-1">{{ report.description }}</p> }
+                  <p class="text-xs text-slate-400 mt-1">Reported by {{ report.reportedBy.firstName }} {{ report.reportedBy.lastName }}</p>
+                </div>
+                <button (click)="resolveReport(report.id)" class="px-3 py-1.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-500 transition">Resolve</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<a [routerLink]="['/events', event.id]"
+   class="group bg-white rounded-2xl border border-slate-200 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-900/5 hover:-translate-y-1 transition-all overflow-hidden block relative">
+
+  @if (authService.isLoggedIn()) {
+    <button (click)="toggleWishlist($event)" [disabled]="wishlistLoading()"
+            class="absolute top-3 right-3 z-10 h-9 w-9 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow-md hover:scale-110 transition disabled:opacity-50">
+      <span [class.text-red-500]="inWishlist()" [class.text-slate-300]="!inWishlist()" class="text-lg leading-none">
+        {{ inWishlist() ? '♥' : '♡' }}
+      </span>
+    </button>
+  }
+
+  <div class="h-44 bg-slate-100 flex items-center justify-center text-slate-300 overflow-hidden">
+    @if (thumbnailUrl()) {
+      <img [src]="thumbnailUrl()" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+    } @else {
+      <span class="text-sm">No Image</span>
+    }
+  </div>
+  <div class="p-4">
+    <p class="text-xs text-primary-600 font-bold uppercase tracking-wide mb-1.5">{{ event.category?.name || 'General' }}</p>
+    <h3 class="font-bold text-slate-900 mb-1.5 line-clamp-1 group-hover:text-primary-700 transition-colors">{{ event.title }}</h3>
+    <p class="text-sm text-slate-500 mb-3">{{ event.eventDate }} • {{ event.college.name }}</p>
+    <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+      <span class="font-bold text-slate-900">{{ event.price > 0 ? ('₹' + event.price) : 'Free' }}</span>
+      <span class="text-xs text-slate-400 font-medium">{{ event.availableSeats }} seats left</span>
+    </div>
+  </div>
+</a>

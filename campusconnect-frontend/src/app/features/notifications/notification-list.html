@@ -1,0 +1,26 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Notifications</h1>
+      @if (notifications().length > 0) {
+        <button (click)="markAllRead()" class="text-sm text-indigo-600 font-medium hover:underline">Mark all as read</button>
+      }
+    </div>
+
+    @if (loading()) {
+      <p class="text-gray-500">Loading...</p>
+    } @else if (notifications().length === 0) {
+      <p class="text-gray-500">No notifications yet.</p>
+    } @else {
+      <div class="space-y-2">
+        @for (notif of notifications(); track notif.id) {
+          <div (click)="markRead(notif)" class="bg-white rounded-lg p-4 shadow-sm cursor-pointer"
+               [class.border-l-4]="!notif.isRead" [class.border-indigo-500]="!notif.isRead">
+            <p class="text-gray-800" [class.font-semibold]="!notif.isRead">{{ notif.message }}</p>
+            <p class="text-xs text-gray-400 mt-1">{{ notif.createdAt }}</p>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,132 @@
+<div class="min-h-screen bg-slate-50">
+
+  <!-- Hero -->
+  <section class="relative bg-dark-950 overflow-hidden">
+    <div class="absolute inset-0 opacity-40">
+      <div class="absolute top-0 left-1/4 h-96 w-96 bg-primary-600 rounded-full blur-3xl opacity-20"></div>
+      <div class="absolute bottom-0 right-1/4 h-96 w-96 bg-primary-400 rounded-full blur-3xl opacity-10"></div>
+    </div>
+
+    <div class="relative max-w-7xl mx-auto px-4 py-24 md:py-32 text-center">
+      <p class="animate-fade-in-up inline-block text-primary-400 text-xs font-bold tracking-widest uppercase mb-4 bg-primary-500/10 px-4 py-1.5 rounded-full border border-primary-500/20">
+        Campus Events, Reimagined
+      </p>
+      <h1 class="animate-fade-in-up delay-1 text-4xl md:text-6xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+        Discover Campus Events<br class="hidden md:block" /> That Matter
+      </h1>
+      <p class="animate-fade-in-up delay-2 text-lg text-slate-400 mb-10 max-w-2xl mx-auto">
+        Find workshops, fests, and meetups happening across colleges near you — book your spot in seconds.
+      </p>
+      <a routerLink="/events"
+         class="animate-fade-in-up delay-3 inline-block bg-primary-600 text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-primary-500 hover:shadow-2xl hover:shadow-primary-600/30 hover:-translate-y-0.5 transition-all">
+        Browse Events →
+      </a>
+    </div>
+  </section>
+
+  @if (authService.isLoggedIn() && !authService.isVendor()) {
+    <section class="max-w-7xl mx-auto px-4 -mt-8 relative z-10">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl shadow-slate-900/5">
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Host your own event on CampusConnect</h3>
+          <p class="text-slate-500 text-sm mt-1">Apply to become a vendor and start creating events for students to discover and book.</p>
+        </div>
+        <a routerLink="/vendor/apply"
+           class="whitespace-nowrap bg-dark-900 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-dark-800 transition">
+          Become a Vendor
+        </a>
+      </div>
+    </section>
+  }
+
+  <!-- Categories -->
+  @if (categories().length > 0) {
+    <section class="max-w-7xl mx-auto px-4 py-16">
+      <h2 class="text-2xl font-bold text-slate-900 mb-6 tracking-tight">Browse by Category</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        @for (category of categories(); track category.id) {
+          <div class="bg-white rounded-2xl border border-slate-200 hover:border-primary-300 hover:shadow-lg hover:shadow-primary-900/5 hover:-translate-y-1 transition-all p-4 text-center cursor-pointer">
+            @if (category.imageUrl) {
+              <img [src]="category.imageUrl" class="h-14 w-14 mx-auto object-contain mb-2" />
+            }
+            <p class="text-sm font-semibold text-slate-700">{{ category.name }}</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Featured Events -->
+  <section class="max-w-7xl mx-auto px-4 py-16">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Upcoming Events</h2>
+      <a routerLink="/events" class="text-primary-600 font-semibold text-sm hover:text-primary-700 flex items-center gap-1">
+        View all →
+      </a>
+    </div>
+
+    @if (loading()) {
+      <p class="text-slate-400">Loading events...</p>
+    } @else if (featuredEvents().length === 0) {
+      <p class="text-slate-400">No upcoming events right now. Check back soon!</p>
+    } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (event of featuredEvents(); track event.id) {
+          <app-event-card [event]="event" />
+        }
+      </div>
+    }
+  </section>
+
+  <!-- About -->
+  <section id="about" class="bg-dark-950 scroll-mt-20">
+    <div class="max-w-5xl mx-auto px-4 py-20">
+      <p class="text-primary-400 text-xs font-bold tracking-widest uppercase mb-3 text-center">Our Mission</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4 text-center tracking-tight">About CampusConnect</h2>
+      <p class="text-slate-400 max-w-2xl mx-auto text-center mb-16">
+        CampusConnect is a smart event and vendor management platform built to connect students, event organizers, and colleges on one single hub.
+      </p>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="text-center">
+          <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-500/5 border border-primary-500/20 flex items-center justify-center text-2xl mx-auto mb-4">🎓</div>
+          <h3 class="font-bold text-white mb-2">For Students</h3>
+          <p class="text-sm text-slate-400">Discover fests, workshops, and meetups across colleges near you. Book your seat, get a QR ticket instantly, and never miss out on campus life.</p>
+        </div>
+        <div class="text-center">
+          <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-500/5 border border-primary-500/20 flex items-center justify-center text-2xl mx-auto mb-4">🎤</div>
+          <h3 class="font-bold text-white mb-2">For Vendors</h3>
+          <p class="text-sm text-slate-400">Apply as a vendor, get approved, and start hosting your own paid or free events. Track bookings, manage earnings, and reach students directly.</p>
+        </div>
+        <div class="text-center">
+          <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-500/5 border border-primary-500/20 flex items-center justify-center text-2xl mx-auto mb-4">🏫</div>
+          <h3 class="font-bold text-white mb-2">For Colleges</h3>
+          <p class="text-sm text-slate-400">Give your campus community a single place to discover everything happening — technical fests, cultural nights, workshops, and more.</p>
+        </div>
+      </div>
+
+      <div class="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur">
+        <h3 class="font-bold text-white mb-6 text-center">How it works</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center text-sm">
+          <div>
+            <p class="font-extrabold text-primary-400 text-2xl mb-2">01</p>
+            <p class="text-slate-400">Sign up and verify your college email</p>
+          </div>
+          <div>
+            <p class="font-extrabold text-primary-400 text-2xl mb-2">02</p>
+            <p class="text-slate-400">Browse events by college, category, date, or price</p>
+          </div>
+          <div>
+            <p class="font-extrabold text-primary-400 text-2xl mb-2">03</p>
+            <p class="text-slate-400">Book instantly — free events confirm right away, paid events go through secure Razorpay checkout</p>
+          </div>
+          <div>
+            <p class="font-extrabold text-primary-400 text-2xl mb-2">04</p>
+            <p class="text-slate-400">Get your QR ticket and show up — that's it</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
